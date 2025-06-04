@@ -1,0 +1,33 @@
+// .devcontainer/devcontainer.json
+{
+    "name": "Debian Base for Emotion Log App",
+    "image": "mcr.microsoft.com/devcontainers/base:debian",
+    "features": {
+        "ghcr.io/devcontainers/features/java:1": {
+            "version": "11", // Play Framework (Scala) はJavaに依存します
+            "installMaven": false,
+            "installGradle": false
+        },
+        "ghcr.io/devcontainers/features/node:1": {
+            "version": "20", // Angular に推奨されるNode.jsのLTSバージョン
+            "npm": true
+        }
+    },
+    "customizations": {
+        "vscode": {
+            "extensions": [
+                "scala-lang.scala", // Scalaサポート
+                "scalameta.metals", // Scala Language Server
+                "Angular.ng-template", // Angularサポート
+                "ms-azuretools.vscode-docker" // Dockerサポート
+            ]
+        }
+    },
+    "postCreateCommand": "bash .devcontainer/post-create.sh",
+    "forwardPorts": [
+        9000, // Play Framework のデフォルトポート
+        4200 // Angular CLI のデフォルトポート
+    ],
+    "workspaceMount": "source=${localWorkspaceFolder},target=/workspaces/${localWorkspaceFolderBasename},type=bind,consistency=cached",
+    "workspaceFolder": "/workspaces/${localWorkspaceFolderBasename}"
+}

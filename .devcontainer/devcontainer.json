@@ -11,6 +11,12 @@
         "ghcr.io/devcontainers/features/node:1": {
             "version": "20", // Angular に推奨されるNode.jsのLTSバージョン
             "npm": true
+        },
+        "ghcr.io/devcontainers/features/common-utils:2": {
+            "installZsh": "false", // zshが不要な場合
+            "installOhMyZsh": "false", // Oh My Zshが不要な場合
+            "upgradePackages": "true",
+            "configureSshAgentForwarding": true // SSHエージェントフォワーディングを有効にする
         }
     },
     "customizations": {

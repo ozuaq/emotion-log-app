@@ -25,7 +25,8 @@
                 "scala-lang.scala", // Scalaサポート
                 "scalameta.metals", // Scala Language Server
                 "Angular.ng-template", // Angularサポート
-                "ms-azuretools.vscode-docker" // Dockerサポート
+                "ms-azuretools.vscode-docker", // Dockerサポート
+                "alexcvzz.vscode-sqlite"
             ]
         }
     },

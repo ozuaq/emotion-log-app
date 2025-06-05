@@ -7,8 +7,17 @@ lazy val root = (project in file(".")).enablePlugins(PlayScala)
 
 scalaVersion := "2.13.16"
 
-libraryDependencies += guice
-libraryDependencies += "org.scalatestplus.play" %% "scalatestplus-play" % "7.0.1" % Test
+libraryDependencies ++= Seq(
+  guice,
+  // JDBC接続プール (HikariCPはPlayにデフォルトで含まれることが多い)
+  jdbc,
+  // Anorm - PlayのシンプルなSQLデータアクセスライブラリ
+  "org.playframework.anorm" %% "anorm" % "2.7.0", // Play 2.9と互換性のあるAnormのバージョンを確認
+  // SQLite JDBCドライバ
+  "org.xerial" % "sqlite-jdbc" % "3.45.3.0", // 最新安定版を確認してください
+  "org.scalatestplus.play" %% "scalatestplus-play" % "7.0.1" % Test
+  // filters, // Play 2.9では通常不要
+)
 
 // Adds additional packages into Twirl
 //TwirlKeys.templateImports += "com.example.controllers._"

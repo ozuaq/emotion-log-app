@@ -1,0 +1,29 @@
+# Metals
+.metals/
+
+# Scala-CLI / Scala Build Tool
+.scala-build/
+target/
+project/project/
+project/target/
+
+# sbt
+# (target/ や project/project/, project/target/ は sbt プロジェクトで一般的)
+# すでに sbt のテンプレートで target/ などが .gitignore に含まれていることが多いです。
+
+# IDE/Editor specific
+.idea/
+*.iml
+*.bsp/
+
+# .vscode/ を基本的に無視するが、特定のファイルは含める
+.vscode/*
+!.vscode/settings.json
+!.vscode/extensions.json
+!.vscode/launch.json # 必要に応じて
+!.vscode/tasks.json   # 必要に応じて
+
+# VS Codeのユーザー設定や状態は無視
+.vscode/User/
+.vscode/.ropeproject # Python Rope (もしあれば)
+.vscode/.history

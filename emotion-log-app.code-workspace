@@ -1,0 +1,15 @@
+{
+	"folders": [
+		{
+			"path": "backend/emotion-log-backend"
+		},
+		{
+			"path": "frontend/emotion-log-frontend"
+		}
+	],
+	"settings": {
+		"files.watcherExclude": {
+			"**/target": true
+		}
+	}
+}

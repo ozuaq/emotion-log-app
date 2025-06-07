@@ -9,6 +9,12 @@ scalaVersion := "2.13.16"
 
 libraryDependencies += guice
 libraryDependencies += "org.scalatestplus.play" %% "scalatestplus-play" % "7.0.1" % Test
+libraryDependencies += jdbc
+libraryDependencies += evolutions
+// Anorm - PlayのシンプルなSQLデータアクセスライブラリ
+libraryDependencies += "org.playframework.anorm" %% "anorm" % "2.7.0"
+// SQLite JDBCドライバ
+libraryDependencies += "org.xerial" % "sqlite-jdbc" % "3.45.3.0"
 
 // Adds additional packages into Twirl
 //TwirlKeys.templateImports += "com.example.controllers._"

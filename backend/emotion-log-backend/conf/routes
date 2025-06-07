@@ -12,3 +12,12 @@ GET     /assets/*file               controllers.Assets.versioned(path="/public",
 # API Endpoints
 GET     /api                controllers.ApiController.index
 GET     /api/health         controllers.ApiController.healthCheck
+
+# --- Emotion Log API Endpoints ---
+POST    /api/logs                 controllers.EmotionLogController.create
+GET     /api/logs/user/:userId    controllers.EmotionLogController.listByUser(userId: String)
+GET     /api/logs/:id             controllers.EmotionLogController.findById(id: Long)
+# デバッグ用
+GET     /api/logs                 controllers.EmotionLogController.listAll
+PUT     /api/logs/:id             controllers.EmotionLogController.update(id: Long)
+DELETE  /api/logs/:id             controllers.EmotionLogController.delete(id: Long)

@@ -2,7 +2,7 @@
 import { Component, OnInit } from '@angular/core';
 import { RouterOutlet } from '@angular/router';
 import { JsonPipe } from '@angular/common'; // JsonPipe をインポート
-import { ApiService, ApiResponse } from './services/api-service'; // 作成したサービスと型をインポート
+import { ApiService, ApiResponse } from './services/api.service'; // 作成したサービスと型をインポート
 
 @Component({
   selector: 'app-root',

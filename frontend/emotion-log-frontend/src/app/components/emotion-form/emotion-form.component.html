@@ -1,0 +1,66 @@
+<div class="container mx-auto p-4 max-w-lg">
+  <div class="bg-white shadow-md rounded-lg p-6">
+    <h2 class="text-2xl font-bold mb-4 text-gray-800">今日の気分はどうですか？</h2>
+
+    <!-- リアクティブフォームとonSubmitイベントを紐付け -->
+    <form [formGroup]="emotionForm" (ngSubmit)="onSubmit()">
+      <!-- 感情選択ボタン -->
+      <div class="mb-6">
+        <label class="block text-gray-700 text-sm font-bold mb-2">感情レベルを選択してください</label>
+        <div class="flex justify-around items-center">
+          @for (level of emotionLevels; track level.value) {
+            <button
+              type="button"
+              (click)="selectEmotion(level.value)"
+              class="w-16 h-16 rounded-full text-white font-bold flex items-center justify-center transition-transform transform hover:scale-110 focus:outline-none focus:ring-4"
+              [ngClass]="[
+                selectedEmotionLevel?.value === level.value ? 'ring-4 ring-offset-2 ring-blue-500' : '',
+                level.color,
+              ]"
+            >
+              {{ level.label }}
+            </button>
+          }
+        </div>
+        <!-- バリデーションエラーメッセージ -->
+        @if (selectedEmotionLevel?.invalid && selectedEmotionLevel?.touched) {
+          <p class="text-red-500 text-xs italic mt-2">感情レベルを選択してください。</p>
+        }
+      </div>
+
+      <!-- メモ入力欄 -->
+      <div class="mb-6">
+        <label for="memo" class="block text-gray-700 text-sm font-bold mb-2">メモ (任意)</label>
+        <textarea
+          id="memo"
+          formControlName="memo"
+          placeholder="気分に影響した出来事などを記録しましょう"
+          class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline h-24"
+        ></textarea>
+      </div>
+
+      <!-- 送信ボタン -->
+      <div class="flex items-center justify-between">
+        <button
+          type="submit"
+          [disabled]="emotionForm.invalid || submissionStatus === 'submitting'"
+          class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline disabled:bg-gray-400 disabled:cursor-not-allowed"
+        >
+          @if (submissionStatus === 'submitting') {
+            <span>送信中...</span>
+          } @else {
+            <span>記録する</span>
+          }
+        </button>
+
+        <!-- 送信ステータスメッセージ -->
+        @if (submissionStatus === 'success') {
+          <span class="text-green-600 font-semibold">記録しました！</span>
+        }
+        @if (submissionStatus === 'error') {
+          <span class="text-red-600 font-semibold">{{ errorMessage }}</span>
+        }
+      </div>
+    </form>
+  </div>
+</div>

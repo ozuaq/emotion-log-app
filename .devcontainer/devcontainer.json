@@ -1,41 +1,64 @@
 // .devcontainer/devcontainer.json
 {
-    "name": "Debian Base for Emotion Log App",
-    "image": "mcr.microsoft.com/devcontainers/base:debian",
-    "features": {
-        "ghcr.io/devcontainers/features/java:1": {
-            "version": "11", // Play Framework (Scala) はJavaに依存します
-            "installMaven": false,
-            "installGradle": false
-        },
-        "ghcr.io/devcontainers/features/node:1": {
-            "version": "20", // Angular に推奨されるNode.jsのLTSバージョン
-            "npm": true
-        },
-        "ghcr.io/devcontainers/features/common-utils:2": {
-            "installZsh": "false", // zshが不要な場合
-            "installOhMyZsh": "false", // Oh My Zshが不要な場合
-            "upgradePackages": "true",
-            "configureSshAgentForwarding": true // SSHエージェントフォワーディングを有効にする
-        }
+  "name": "Debian Base for Emotion Log App",
+  "image": "mcr.microsoft.com/devcontainers/base:debian",
+  "features": {
+    "ghcr.io/devcontainers/features/java:1": {
+      "version": "11", // Play Framework (Scala) はJavaに依存します
+      "installMaven": false,
+      "installGradle": false
     },
-    "customizations": {
-        "vscode": {
-            "extensions": [
-                "scala-lang.scala", // Scalaサポート
-                "scalameta.metals", // Scala Language Server
-                "Angular.ng-template", // Angularサポート
-                "ms-azuretools.vscode-docker", // Dockerサポート
-                "alexcvzz.vscode-sqlite",
-                "humao.rest-client"
-            ]
-        }
+    "ghcr.io/devcontainers/features/node:1": {
+      "version": "20", // Angular に推奨されるNode.jsのLTSバージョン
+      "npm": true
     },
-    "postCreateCommand": "bash .devcontainer/post-create.sh",
-    "forwardPorts": [
-        9000, // Play Framework のデフォルトポート
-        4200 // Angular CLI のデフォルトポート
-    ],
-    "workspaceMount": "source=${localWorkspaceFolder},target=/workspaces/${localWorkspaceFolderBasename},type=bind,consistency=cached",
-    "workspaceFolder": "/workspaces/${localWorkspaceFolderBasename}"
+    "ghcr.io/devcontainers/features/common-utils:2": {
+      "installZsh": "false", // zshが不要な場合
+      "installOhMyZsh": "false", // Oh My Zshが不要な場合
+      "upgradePackages": "true",
+      "configureSshAgentForwarding": true // SSHエージェントフォワーディングを有効にする
+    }
+  },
+  "customizations": {
+    "vscode": {
+      "extensions": [
+        "scala-lang.scala", // Scalaサポート
+        "scalameta.metals", // Scala Language Server
+        "Angular.ng-template", // Angularサポート
+        "ms-azuretools.vscode-docker", // Dockerサポート
+        "alexcvzz.vscode-sqlite",
+        "humao.rest-client",
+        "streetsidesoftware.code-spell-checker",
+        "esbenp.prettier-vscode"
+      ],
+      "settings": {
+        "[html]": {
+          "editor.defaultFormatter": "esbenp.prettier-vscode",
+          "editor.formatOnSave": true
+        },
+        "[json]": {
+          "editor.defaultFormatter": "esbenp.prettier-vscode",
+          "editor.formatOnSave": true
+        },
+        "[jsonc]": {
+          "editor.defaultFormatter": "esbenp.prettier-vscode"
+        },
+        "files.watcherExclude": {
+          "**/.git/objects/**": true,
+          "**/.git/subtree-cache/**": true,
+          "**/node_modules/*/**": true,
+          "**/.bloop": true,
+          "**/.metals": true,
+          "**/target": true // <-- ★これを追加
+        }
+      }
+    }
+  },
+  "postCreateCommand": "bash .devcontainer/post-create.sh",
+  "forwardPorts": [
+    9000, // Play Framework のデフォルトポート
+    4200 // Angular CLI のデフォルトポート
+  ],
+  "workspaceMount": "source=${localWorkspaceFolder},target=/workspaces/${localWorkspaceFolderBasename},type=bind,consistency=cached",
+  "workspaceFolder": "/workspaces/${localWorkspaceFolderBasename}"
 }

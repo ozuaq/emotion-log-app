@@ -1,0 +1,35 @@
+<div style="padding: 20px; font-family: sans-serif;">
+  <h1>{{ title }}</h1>
+
+  <hr>
+  <h2>バックエンドAPIデータ:</h2>
+  @if (apiData) {
+  <div>
+    <p><strong>メッセージ:</strong> {{ apiData.message }}</p>
+    <p><strong>ステータス:</strong> {{ apiData.status }}</p>
+    <p><strong>タイムスタンプ:</strong> {{ apiData.timestamp }}</p>
+  </div>
+  } @else {
+  <p>APIデータを読み込み中...</p>
+  }
+
+  <hr style="margin-top: 20px;">
+  <h2>バックエンド ヘルスチェック:</h2>
+  @if (healthStatus) {
+  <div>
+    <p><strong>ステータス:</strong> {{ healthStatus }}</p>
+  </div>
+  } @else {
+  <p>ヘルスステータスを読み込み中...</p>
+  }
+
+  @if (error) {
+  <div style="color: red; margin-top: 20px; border: 1px solid red; padding: 10px;">
+    <h2>エラー:</h2>
+    <pre style="white-space: pre-wrap; word-break: break-all;">{{ error | json }}</pre>
+  </div>
+  }
+</div>
+
+<!-- ルーティング用のプレースホルダ -->
+<router-outlet></router-outlet>

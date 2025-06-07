@@ -6,3 +6,17 @@
 .Trashes
 ehthumbs.db
 Thumbs.db
+
+# Scala / sbt / Metals / Bloop
+# -----------------------------
+# バックエンドプロジェクト内のビルド成果物やエディタ設定を無視
+/target/
+/.bloop/
+/.metals/
+/.bsp/
+/.vscode/
+/project/project/
+/project/target/
+/project/metals.sbt
+/project/.bloop/
+/.scala-build/

@@ -110,8 +110,33 @@ class EmotionLogController @Inject() (
       }
   }
 
+  // 以下、デバッグ用のエンドポイント
   // (デバッグ用) 全ての感情ログを取得 (GET /api/logs)
   def listAll(): Action[AnyContent] = Action { implicit request =>
     Ok(Json.toJson(emotionLogRepo.listAll()))
+  }
+
+  /** サンプルデータを生成するAPIエンドポイント
+    */
+  def seed(): Action[AnyContent] = Action {
+    implicit request: Request[AnyContent] =>
+      try {
+        val insertedRows = emotionLogRepo.seed()
+        Ok(
+          Json.obj(
+            "status" -> "OK",
+            "message" -> s"${insertedRows}件のサンプルデータを生成しました。"
+          )
+        )
+      } catch {
+        case e: Exception =>
+          InternalServerError(
+            Json.obj(
+              "status" -> "KO",
+              "message" -> "サンプルデータの生成中にエラーが発生しました。",
+              "error" -> e.getMessage
+            )
+          )
+      }
   }
 }

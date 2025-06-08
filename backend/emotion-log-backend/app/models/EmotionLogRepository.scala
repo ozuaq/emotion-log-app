@@ -111,10 +111,56 @@ class EmotionLogRepository @Inject() (db: Database)(implicit
     }
   }
 
+  // 以下、デバッグ用のメソッド
   // (オプション) 全ての感情ログを取得 (デバッグ用など)
   def listAll(): List[EmotionLog] = {
     db.withConnection { implicit c =>
       SQL"SELECT * FROM emotion_log".as(emotionLogParser.*)
+    }
+  }
+
+  /** データベースにサンプルデータを投入する（既存のデータは削除される）
+    * @return
+    *   挿入された行数
+    */
+  def seed(): Int = {
+    db.withTransaction { implicit connection =>
+      val userId = "user123"
+      val now = java.time.LocalDate.now()
+      val random = new scala.util.Random
+
+      val emotionLevels = List(
+        EmotionLevel.VeryGood,
+        EmotionLevel.Good,
+        EmotionLevel.Neutral,
+        EmotionLevel.Bad,
+        EmotionLevel.VeryBad
+      )
+      val memos = List(
+        Some("仕事が順調だった"),
+        Some("良い天気で散歩した"),
+        None,
+        Some("少し疲れたかも"),
+        Some("面白い本を読んだ"),
+        None,
+        Some("友人と話して楽しかった")
+      )
+
+      // このユーザーの既存のデータを全て削除
+      SQL"DELETE FROM emotion_log WHERE user_id = ${userId}".executeUpdate()
+
+      // 過去30日間のランダムなデータを作成して挿入
+      val results = (0 to 29).map { i =>
+        val date = now.minusDays(i)
+        val level = emotionLevels(random.nextInt(emotionLevels.length))
+        val memo = memos(random.nextInt(memos.length))
+        SQL"""
+              INSERT INTO emotion_log (user_id, log_date, emotion_level, memo, recorded_at)
+              VALUES (${userId}, ${date}, ${level.value}, ${memo}, ${java.time.Instant
+            .now()})
+            """.executeUpdate()
+      }
+      results.sum // 挿入された行数の合計を返す
     }
   }
 }

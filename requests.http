@@ -38,3 +38,7 @@ Content-Type: application/json
 }
 
 // 期待されるレスポンス: {"status":"OK", "message":"Emotion log saved", "id":2} のような形式 (新しいID)
+
+###
+### サンプルデータを生成する（ユーザーの既存データは削除される）
+POST http://localhost:9000/api/logs/seed

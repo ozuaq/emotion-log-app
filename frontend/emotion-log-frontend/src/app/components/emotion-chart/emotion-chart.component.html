@@ -1,0 +1,10 @@
+<div class="bg-white shadow-md rounded-lg p-6">
+  <h3 class="text-xl font-bold mb-4 text-gray-700">感情の割合</h3>
+  @if (pieChartData.datasets[0].data.length > 0) {
+    <div class="chart-container" style="position: relative; height: 40vh; width: 100%">
+      <canvas baseChart [data]="pieChartData" [type]="pieChartType" [options]="pieChartOptions"> </canvas>
+    </div>
+  } @else {
+    <p class="text-center text-gray-500 py-8">表示するデータがありません。</p>
+  }
+</div>

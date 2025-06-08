@@ -1,11 +1,12 @@
 import { Component, OnInit, inject } from '@angular/core';
-import { CommonModule, DatePipe } from '@angular/common'; // DatePipeをインポート
+import { CommonModule, DatePipe } from '@angular/common';
 import { EmotionLogService, EmotionLog } from '../../services/emotion-log.service';
+import { EmotionChartComponent } from '../emotion-chart/emotion-chart.component';
 
 @Component({
   selector: 'app-emotion-list',
   standalone: true,
-  imports: [CommonModule],
+  imports: [CommonModule, EmotionChartComponent],
   providers: [DatePipe], // DatePipeをプロバイダーとして登録
   templateUrl: './emotion-list.component.html',
   styleUrls: ['./emotion-list.component.scss']

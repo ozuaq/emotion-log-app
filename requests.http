@@ -39,6 +39,21 @@ Content-Type: application/json
 
 // 期待されるレスポンス: {"status":"OK", "message":"Emotion log saved", "id":2} のような形式 (新しいID)
 
+
 ###
-### サンプルデータを生成する（ユーザーの既存データは削除される）
-POST http://localhost:9000/api/logs/seed
+### サンプルデータを特定の月に生成する
+# URLの末尾に ?year=YYYY&month=M のように指定します。
+# 以下の例では、2025年5月分のデータを生成します。
+POST http://localhost:9000/api/logs/seed?year=2025&month=5
+
+###
+### 別の月のデータを生成（例：2025年4月）
+POST http://localhost:9000/api/logs/seed?year=2025&month=4
+
+###
+### 別の月のデータを生成（例：2025年6月）
+POST http://localhost:9000/api/logs/seed?year=2025&month=6
+
+###
+### パラメータが不足している場合（エラー例）
+POST http://localhost:9000/api/logs/seed?year=2025

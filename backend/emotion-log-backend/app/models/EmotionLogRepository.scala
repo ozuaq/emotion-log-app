@@ -5,6 +5,8 @@ import javax.inject.{Inject, Singleton}
 import play.api.db.Database // PlayのDB接続
 import anorm._ // Anormのコアライブラリ
 import anorm.SqlParser._ // Anormのパーサー
+import java.time.LocalDate // LocalDateをインポート
+import scala.util.Random // Randomをインポート
 
 // EmotionLogRepositoryで利用するEmotionLogとEmotionLevelをインポート
 // (同じパッケージなので通常は不要ですが、明示的に記述)
@@ -119,48 +121,47 @@ class EmotionLogRepository @Inject() (db: Database)(implicit
     }
   }
 
-  /** データベースにサンプルデータを投入する（既存のデータは削除される）
+  /** 指定された年月のサンプルデータをデータベースに上書き(Upsert)する
+    * @param year
+    *   対象の年
+    * @param month
+    *   対象の月 (1-12)
     * @return
-    *   挿入された行数
+    *   処理された日数
     */
-  def seed(): Int = {
-    db.withTransaction { implicit connection =>
-      val userId = "user123"
-      val now = java.time.LocalDate.now()
-      val random = new scala.util.Random
+  def seed(year: Int, month: Int): Int = {
+    val userId = "user123"
+    val random = new Random
 
-      val emotionLevels = List(
-        EmotionLevel.VeryGood,
-        EmotionLevel.Good,
-        EmotionLevel.Neutral,
-        EmotionLevel.Bad,
-        EmotionLevel.VeryBad
-      )
-      val memos = List(
-        Some("仕事が順調だった"),
-        Some("良い天気で散歩した"),
-        None,
-        Some("少し疲れたかも"),
-        Some("面白い本を読んだ"),
-        None,
-        Some("友人と話して楽しかった")
-      )
+    val firstDayOfMonth = LocalDate.of(year, month, 1)
+    val daysInMonth = firstDayOfMonth.lengthOfMonth()
 
-      // このユーザーの既存のデータを全て削除
-      SQL"DELETE FROM emotion_log WHERE user_id = ${userId}".executeUpdate()
+    val emotionLevels = List(
+      EmotionLevel.VeryGood,
+      EmotionLevel.Good,
+      EmotionLevel.Neutral,
+      EmotionLevel.Bad,
+      EmotionLevel.VeryBad
+    )
+    val memos = List(
+      Some("仕事が順調だった"),
+      Some("良い天気で散歩した"),
+      None,
+      Some("少し疲れたかも"),
+      Some("面白い本を読んだ"),
+      None
+    )
 
-      // 過去30日間のランダムなデータを作成して挿入
-      val results = (0 to 29).map { i =>
-        val date = now.minusDays(i)
-        val level = emotionLevels(random.nextInt(emotionLevels.length))
-        val memo = memos(random.nextInt(memos.length))
-        SQL"""
-              INSERT INTO emotion_log (user_id, log_date, emotion_level, memo, recorded_at)
-              VALUES (${userId}, ${date}, ${level.value}, ${memo}, ${java.time.Instant
-            .now()})
-            """.executeUpdate()
-      }
-      results.sum // 挿入された行数の合計を返す
+    // 既存のDELETE文は使わず、一日ずつupsertを呼び出す
+    (0 until daysInMonth).foreach { i =>
+      val date = firstDayOfMonth.plusDays(i)
+      val level = emotionLevels(random.nextInt(emotionLevels.length))
+      val memo = memos(random.nextInt(memos.length))
+
+      // 既存のupsertメソッドを再利用
+      upsert(userId, date, level, memo)
     }
+
+    daysInMonth // 処理した日数を返す
   }
 }

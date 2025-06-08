@@ -5,6 +5,7 @@ import play.api.mvc._
 import play.api.libs.json._
 import models.{EmotionLogRepository, EmotionLog, EmotionLevel}
 import java.time.LocalDate
+import scala.util.Try // Tryをインポート
 
 // JSONのやり取りで使うデータ構造とフォーマットを定義するコンパニオンオブジェクト
 object EmotionLogController {
@@ -116,27 +117,57 @@ class EmotionLogController @Inject() (
     Ok(Json.toJson(emotionLogRepo.listAll()))
   }
 
-  /** サンプルデータを生成するAPIエンドポイント
+  /** サンプルデータを生成するAPIエンドポイント クエリパラメータで ?year=YYYY&month=M のように年月を指定
     */
   def seed(): Action[AnyContent] = Action {
     implicit request: Request[AnyContent] =>
-      try {
-        val insertedRows = emotionLogRepo.seed()
-        Ok(
-          Json.obj(
-            "status" -> "OK",
-            "message" -> s"${insertedRows}件のサンプルデータを生成しました。"
-          )
-        )
-      } catch {
-        case e: Exception =>
-          InternalServerError(
+      // クエリ文字列からyearとmonthを安全に取得
+      val yearOpt = request.queryString
+        .get("year")
+        .flatMap(_.headOption.flatMap(s => Try(s.toInt).toOption))
+      val monthOpt = request.queryString
+        .get("month")
+        .flatMap(_.headOption.flatMap(s => Try(s.toInt).toOption))
+
+      // for内包表記を使って、yearとmonthの両方が存在する場合のみ処理を実行
+      (for {
+        year <- yearOpt
+        month <- monthOpt
+      } yield {
+        try {
+          val insertedRows = emotionLogRepo.seed(year, month)
+          Ok(
             Json.obj(
-              "status" -> "KO",
-              "message" -> "サンプルデータの生成中にエラーが発生しました。",
-              "error" -> e.getMessage
+              "status" -> "OK",
+              "message" -> s"${year}年${month}月分のサンプルデータ（${insertedRows}件）を生成しました。"
             )
           )
+        } catch {
+          case e: java.time.DateTimeException =>
+            BadRequest(
+              Json.obj(
+                "status" -> "KO",
+                "message" -> "無効な年月が指定されました。",
+                "error" -> e.getMessage
+              )
+            )
+          case e: Exception =>
+            InternalServerError(
+              Json.obj(
+                "status" -> "KO",
+                "message" -> "サンプルデータの生成中にエラーが発生しました。",
+                "error" -> e.getMessage
+              )
+            )
+        }
+      }).getOrElse {
+        // yearまたはmonthが指定されていない場合はBadRequestを返す
+        BadRequest(
+          Json.obj(
+            "status" -> "KO",
+            "message" -> "クエリパラメータ 'year' と 'month' を指定してください。例: ?year=2025&month=5"
+          )
+        )
       }
   }
 }

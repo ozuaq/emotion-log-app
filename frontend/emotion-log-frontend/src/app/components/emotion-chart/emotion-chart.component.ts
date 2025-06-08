@@ -67,11 +67,27 @@ export class EmotionChartComponent implements OnChanges {
     }]
   };
 
-  // 親から渡されたlogsデータが変更されたときに実行されるライフサイクルフック
   ngOnChanges(changes: SimpleChanges): void {
-    if (changes['logs'] && this.logs.length > 0) {
-      this.updateChartData();
+    // logsプロパティが変更されたかチェック
+    if (changes['logs']) {
+      // 渡されたlogsデータでグラフを更新、データがなければクリアする
+      if (this.logs && this.logs.length > 0) {
+        this.updateChartData();
+      } else {
+        this.clearChartData();
+      }
     }
+  }
+
+  // グラフデータをクリアするメソッド
+  private clearChartData(): void {
+    this.pieChartData = {
+      labels: [],
+      datasets: [{
+        data: []
+      }]
+    };
+    this.chart?.update(); // グラフの再描画をトリガー
   }
 
   // ログデータを集計してグラフデータを更新するメソッド

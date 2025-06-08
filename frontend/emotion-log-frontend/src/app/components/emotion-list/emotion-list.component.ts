@@ -12,15 +12,15 @@ import { EmotionChartComponent } from '../emotion-chart/emotion-chart.component'
   styleUrls: ['./emotion-list.component.scss']
 })
 export class EmotionListComponent implements OnInit {
-  private apiService = inject(EmotionLogService);
+  private emotionLogService = inject(EmotionLogService);
   private datePipe = inject(DatePipe); // DatePipeをインジェクト
 
-  // コンポーネントの状態を管理
-  logs: EmotionLog[] = [];
+  private allLogs: EmotionLog[] = []; // 全てのログを保持
+  public filteredLogs: EmotionLog[] = []; // フィルタリング後のログ
+  public currentMonth: Date = new Date(); // 現在表示している月
+  
   loadingState: 'loading' | 'loaded' | 'error' = 'loading';
   errorMessage: string | null = null;
-  
-  // 感情レベルと対応する表示スタイルをマッピング
   emotionDisplayMap: { [key: string]: { label: string; color: string; emoji: string } } = {
     'very_good': { label: '最高', color: 'bg-yellow-400', emoji: '😄' },
     'good':      { label: '良い', color: 'bg-green-400', emoji: '😊' },
@@ -30,16 +30,18 @@ export class EmotionListComponent implements OnInit {
   };
 
   ngOnInit(): void {
-    this.loadLogs();
+    this.loadAllLogs();
   }
 
-  loadLogs(): void {
+  // 全てのログを一度だけ取得するメソッド
+  loadAllLogs(): void {
     this.loadingState = 'loading';
-    const userId = 'user123'; // TODO: 将来的に動的なユーザーIDに置き換える
+    const userId = 'user123'; // TODO: 動的なユーザーIDに
 
-    this.apiService.getEmotionLogs(userId).subscribe({
+    this.emotionLogService.getEmotionLogs(userId).subscribe({
       next: (data) => {
-        this.logs = data;
+        this.allLogs = data;
+        this.filterLogsForCurrentMonth(); // 取得後に現在の月でフィルタリング
         this.loadingState = 'loaded';
       },
       error: (err) => {
@@ -48,6 +50,37 @@ export class EmotionListComponent implements OnInit {
         this.loadingState = 'error';
       }
     });
+  }
+
+    /**
+   * allLogsの中からcurrentMonthに合致するログをフィルタリングする
+   */
+  filterLogsForCurrentMonth(): void {
+    const year = this.currentMonth.getFullYear();
+    const month = this.currentMonth.getMonth(); // 0-11
+
+    this.filteredLogs = this.allLogs.filter(log => {
+      const logDate = new Date(log.logDate);
+      return logDate.getFullYear() === year && logDate.getMonth() === month;
+    });
+  }
+
+  /**
+   * 表示する月を変更する
+   * @param offset -1で前月、1で次月
+   */
+  changeMonth(offset: number): void {
+    this.currentMonth.setMonth(this.currentMonth.getMonth() + offset);
+    // Dateオブジェクトが変更されたことをAngularに検知させるために新しいインスタンスを作成
+    this.currentMonth = new Date(this.currentMonth);
+    this.filterLogsForCurrentMonth();
+  }
+
+  /**
+   * 表示用の月の文字列を返す (例: 2025年6月)
+   */
+  get currentMonthDisplay(): string {
+    return this.datePipe.transform(this.currentMonth, 'yyyy年 M月') || '';
   }
 
   // emotionLevelに対応する表示情報を取得するヘルパーメソッド

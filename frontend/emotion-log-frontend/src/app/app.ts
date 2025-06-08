@@ -1,6 +1,6 @@
 // frontend/emotion-log-frontend/src/app/app.ts
 import { Component, OnInit } from '@angular/core';
-import { RouterOutlet } from '@angular/router';
+import { RouterOutlet, RouterLink, RouterLinkActive } from '@angular/router';
 import { JsonPipe } from '@angular/common'; // JsonPipe をインポート
 import { ApiService, ApiResponse } from './services/api.service'; // 作成したサービスと型をインポート
 
@@ -9,7 +9,8 @@ import { ApiService, ApiResponse } from './services/api.service'; // 作成し�
   standalone: true, // スタンドアロンコンポーネント
   imports: [
     RouterOutlet,
-    JsonPipe // JsonPipe を imports 配列に追加
+    RouterLink,
+    RouterLinkActive
   ],
   templateUrl: './app.html',
   styleUrl: './app.scss' // styleUrl は単数形が一般的

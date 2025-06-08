@@ -18,6 +18,16 @@ export interface EmotionLogPayload {
   recordedAt?: string; // ISO 8601形式の文字列 (e.g., "2025-06-08T10:00:00Z")
 }
 
+// バックエンドから受け取る感情ログの型
+export interface EmotionLog {
+  id: number;
+  userId: string;
+  emotionLevel: string;
+  memo: string | null;
+  recordedAt: string; // ISO 8601 形式の文字列
+  // createdAt と updatedAt もバックエンドから送られてくる場合は追加
+}
+
 @Injectable({
   providedIn: 'root'
 })
@@ -43,5 +53,14 @@ export class ApiService {
   */
   createEmotionLog(logData: EmotionLogPayload): Observable<{ id: number }> {
     return this.http.post<{ id: number }>(`${this.apiUrl}/logs`, logData);
+  }
+
+  /**
+   * 特定ユーザーの感情ログ一覧を取得する
+   * @param userId 取得するユーザーのID
+   * @returns 感情ログの配列を含むObservable
+   */
+  getEmotionLogs(userId: string): Observable<EmotionLog[]> {
+    return this.http.get<EmotionLog[]>(`${this.apiUrl}/logs/user/${userId}`);
   }
 }

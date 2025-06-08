@@ -8,5 +8,5 @@ export const routes: Routes = [
    // /logs パスにアクセスしたらEmotionListComponentを表示
   { path: 'logs', component: EmotionListComponent },
   // デフォルトのルートを設定（一覧ページをデフォルトにするなど変更も可能）
-  { path: '', redirectTo: '/logs', pathMatch: 'full' },
+  { path: '', redirectTo: '/new', pathMatch: 'full' },
 ];

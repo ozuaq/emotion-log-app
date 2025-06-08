@@ -1,7 +1,7 @@
 import { Component, inject } from '@angular/core';
 import { FormBuilder, Validators, ReactiveFormsModule } from '@angular/forms';
-import { CommonModule } from '@angular/common';
-import { ApiService, EmotionLogPayload } from '../../services/api.service';
+import { CommonModule, formatDate } from '@angular/common';
+import { EmotionLogService, EmotionLogPayload } from '../../services/emotion-log.service';
 
 @Component({
   selector: 'app-emotion-form',
@@ -16,7 +16,7 @@ import { ApiService, EmotionLogPayload } from '../../services/api.service';
 export class EmotionFormComponent {
   // サービスのインジェクション (新しい inject() 関数を使う方法)
   private fb = inject(FormBuilder);
-  private apiService = inject(ApiService);
+  private emotionLogService = inject(EmotionLogService);
 
   // 感情レベルの選択肢
   emotionLevels = [
@@ -31,9 +31,13 @@ export class EmotionFormComponent {
   submissionStatus: 'idle' | 'submitting' | 'success' | 'error' = 'idle';
   errorMessage: string | null = null;
 
+    // 今日の日付を'yyyy-MM-dd'形式で取得
+  today = formatDate(new Date(), 'yyyy-MM-dd', 'en-US');
+
   // リアクティブフォームの定義
   emotionForm = this.fb.group({
-    // emotionLevelは必須項目
+    // logDate、emotionLevelは必須項目
+    logDate: [this.today, Validators.required],
     emotionLevel: ['', Validators.required],
     // memoは任意項目
     memo: ['']
@@ -66,22 +70,20 @@ export class EmotionFormComponent {
     // APIに送信するデータを作成
     const payload: EmotionLogPayload = {
       userId: 'user123', // TODO: 将来的に動的なユーザーIDに置き換える
+      logDate: formValue.logDate!, // フォームから日付を取得
       emotionLevel: formValue.emotionLevel!, // `!` は値がnull/undefinedでないことをコンパイラに伝える
       memo: formValue.memo || null, // 空文字列の場合はnullを送る
-      recordedAt: new Date().toISOString() // 現在時刻をISO文字列で設定
     };
 
-    // APIサービスを呼び出す
-    this.apiService.createEmotionLog(payload).subscribe({
+    this.emotionLogService.saveEmotionLog(payload).subscribe({
       next: (response) => {
-        console.log('Successfully created log with ID:', response.id);
+        console.log('Successfully saved log with ID:', response.id);
         this.submissionStatus = 'success';
-        this.emotionForm.reset(); // フォームをリセット
-        // 3秒後にステータスをリセット
+        // フォームのリセットはせず、成功メッセージだけ表示
         setTimeout(() => this.submissionStatus = 'idle', 3000);
       },
       error: (err) => {
-        console.error('Error creating log:', err);
+        console.error('Error saving log:', err);
         this.submissionStatus = 'error';
         this.errorMessage = '記録の保存中にエラーが発生しました。';
       }

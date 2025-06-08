@@ -1,6 +1,6 @@
 package models
 
-import java.time.Instant // 日付と時刻の扱いにInstantを使用
+import java.time.{Instant, LocalDate}
 
 // 感情の段階を表すためのEnum (またはSealed Trait)
 sealed trait EmotionLevel {
@@ -39,6 +39,7 @@ object EmotionLevel {
 case class EmotionLog(
     id: Option[Long], // データベースで自動採番されるID (新規作成時はNone)
     userId: String, // ユーザーID (将来的には認証と連携)
+    logDate: LocalDate, // 記録対象の日付
     emotionLevel: EmotionLevel, // 感情の段階 (非常に良い、良い、普通、悪い、非常に悪い)
     memo: Option[String], // 簡単なメモ (任意)
     recordedAt: Instant // 記録日時 (日付のみを扱う場合はLocalDateなども検討)

@@ -4,7 +4,7 @@ import javax.inject._
 import play.api.mvc._
 import play.api.libs.json._
 import models.{EmotionLogRepository, EmotionLog, EmotionLevel}
-import java.time.Instant
+import java.time.LocalDate
 
 // JSONのやり取りで使うデータ構造とフォーマットを定義するコンパニオンオブジェクト
 object EmotionLogController {
@@ -15,9 +15,9 @@ object EmotionLogController {
   // APIリクエストのボディ(ペイロード)を表すケースクラス
   case class EmotionLogPayload(
       userId: String,
+      logDate: LocalDate,
       emotionLevel: EmotionLevel,
-      memo: Option[String],
-      recordedAt: Option[Instant] // 新規作成/更新時に日時の指定がなければ現在時刻を使う
+      memo: Option[String]
   )
 
   // ペイロードをJSONから読み込むためのフォーマット
@@ -35,8 +35,8 @@ class EmotionLogController @Inject() (
 
   // --- Emotion Log CRUD Endpoints ---
 
-  // 新しい感情ログを作成 (POST /api/logs)
-  def create(): Action[JsValue] = Action(parse.json) {
+  // 感情ログを新規作成または更新 (POST /api/logs/)
+  def upsert(): Action[JsValue] = Action(parse.json) {
     implicit request: Request[JsValue] =>
       request.body
         .validate[EmotionLogPayload]
@@ -46,18 +46,17 @@ class EmotionLogController @Inject() (
               Json.obj("status" -> "KO", "message" -> JsError.toJson(errors))
             ),
           payload => {
-            val recordedAt = payload.recordedAt.getOrElse(Instant.now())
-            emotionLogRepo.create(
+            emotionLogRepo.upsert(
               payload.userId,
+              payload.logDate,
               payload.emotionLevel,
-              payload.memo,
-              recordedAt
+              payload.memo
             ) match {
               case Some(id) =>
-                Created(
+                Ok(
                   Json.obj(
                     "status" -> "OK",
-                    "message" -> "Emotion log created",
+                    "message" -> "Emotion log saved",
                     "id" -> id
                   )
                 )
@@ -65,7 +64,7 @@ class EmotionLogController @Inject() (
                 InternalServerError(
                   Json.obj(
                     "status" -> "KO",
-                    "message" -> "Could not create emotion log"
+                    "message" -> "Could not save emotion log"
                   )
                 )
             }
@@ -90,40 +89,6 @@ class EmotionLogController @Inject() (
             Json.obj("status" -> "KO", "message" -> "Emotion log not found")
           )
       }
-  }
-
-  // 感情ログを更新 (PUT /api/logs/:id)
-  def update(id: Long): Action[JsValue] = Action(parse.json) {
-    implicit request: Request[JsValue] =>
-      request.body
-        .validate[EmotionLogPayload]
-        .fold(
-          errors =>
-            BadRequest(
-              Json.obj("status" -> "KO", "message" -> JsError.toJson(errors))
-            ),
-          payload => {
-            val recordedAt = payload.recordedAt.getOrElse(Instant.now())
-            val updatedRows = emotionLogRepo
-              .update(id, payload.emotionLevel, payload.memo, recordedAt)
-            if (updatedRows > 0) {
-              Ok(
-                Json.obj(
-                  "status" -> "OK",
-                  "message" -> "Emotion log updated",
-                  "id" -> id
-                )
-              )
-            } else {
-              NotFound(
-                Json.obj(
-                  "status" -> "KO",
-                  "message" -> "Emotion log not found or not updated"
-                )
-              )
-            }
-          }
-        )
   }
 
   // 感情ログを削除 (DELETE /api/logs/:id)

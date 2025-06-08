@@ -2,26 +2,20 @@ import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
 
-// バックエンドAPIからのレスポンスの型を定義
-export interface ApiResponse {
-  message: string;
-  status: string;
-  timestamp: string;
-}
-
 // 感情ログ作成時のリクエストボディ(ペイロード)の型
 // バックエンドのEmotionLogPayloadと合わせる
 export interface EmotionLogPayload {
   userId: string;
+  logDate: string; // 'yyyy-MM-dd'形式の文字列
   emotionLevel: string; // 'very_good', 'good', 'neutral', 'bad', 'very_bad'
   memo?: string | null; // `?` はオプショナル、`| null` は明示的にnullを許容
-  recordedAt?: string; // ISO 8601形式の文字列 (e.g., "2025-06-08T10:00:00Z")
 }
 
 // バックエンドから受け取る感情ログの型
 export interface EmotionLog {
   id: number;
   userId: string;
+  logDate: string;
   emotionLevel: string;
   memo: string | null;
   recordedAt: string; // ISO 8601 形式の文字列
@@ -31,28 +25,19 @@ export interface EmotionLog {
 @Injectable({
   providedIn: 'root'
 })
-export class ApiService {
+export class EmotionLogService {
   private apiUrl = 'http://localhost:9000/api'; // バックエンドAPIのベースURL
 
   constructor(private http: HttpClient) { }
 
-  // バックエンドの /api エンドポイントからデータを取得するメソッド
-  getApiData(): Observable<ApiResponse> {
-    return this.http.get<ApiResponse>(this.apiUrl);
-  }
-
-  // バックエンドの /api/health エンドポイントからデータを取得するメソッド
-  getHealthCheck(): Observable<{ status: string }> {
-    return this.http.get<{ status: string }>(`${this.apiUrl}/health`);
-  }
-
   /**
-  * 新しい感情ログを作成する
-  * @param logData 作成する感情ログのデータ
-  * @returns 作成結果を含むObservable
-  */
-  createEmotionLog(logData: EmotionLogPayload): Observable<{ id: number }> {
-    return this.http.post<{ id: number }>(`${this.apiUrl}/logs`, logData);
+   * 感情ログを保存（新規作成または更新）する
+   * @param logData 保存する感情ログのデータ
+   */
+  // ★メソッド名をcreateからsaveに変更
+  saveEmotionLog(logData: EmotionLogPayload): Observable<{id: number}> {
+    // POST /api/logs は upsert アクションを指している
+    return this.http.post<{id: number}>(`${this.apiUrl}/logs`, logData);
   }
 
   /**

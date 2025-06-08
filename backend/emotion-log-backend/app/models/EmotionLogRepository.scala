@@ -1,6 +1,6 @@
 package models
 
-import java.time.Instant
+import java.time.{Instant, LocalDate}
 import javax.inject.{Inject, Singleton}
 import play.api.db.Database // PlayのDB接続
 import anorm._ // Anormのコアライブラリ
@@ -15,40 +15,59 @@ class EmotionLogRepository @Inject() (db: Database)(implicit
     ec: scala.concurrent.ExecutionContext
 ) {
 
-  // EmotionLogオブジェクトをデータベースの行からマッピングするためのAnormパーサー
+  // DBの行からEmotionLogオブジェクトにマッピングするためのパーサー
   private val emotionLogParser: RowParser[EmotionLog] = {
-    get[Option[Long]]("id") ~ // idカラム (Option[Long]として取得)
-      get[String]("user_id") ~ // user_idカラム
-      get[String](
-        "emotion_level"
-      ) ~ // emotion_levelカラム (Stringとして取得し、後でEmotionLevelに変換)
-      get[Option[String]]("memo") ~ // memoカラム
-      get[Instant]("recorded_at") map { // recorded_atカラム (Instantとして取得)
-        case id ~ userId ~ emotionLevelStr ~ memo ~ recordedAt =>
+    get[Option[Long]]("id") ~
+      get[String]("user_id") ~
+      get[LocalDate]("log_date") ~ // ★変更
+      get[String]("emotion_level") ~
+      get[Option[String]]("memo") ~
+      get[Instant]("recorded_at") map {
+        case id ~ userId ~ logDate ~ emotionLevelStr ~ memo ~ recordedAt =>
           EmotionLog(
             id,
             userId,
+            logDate,
             EmotionLevel
               .fromString(emotionLevelStr)
-              .getOrElse(EmotionLevel.Neutral), // 文字列からEmotionLevelに変換
+              .getOrElse(EmotionLevel.Neutral),
             memo,
             recordedAt
           )
       }
   }
 
-  // 新しい感情ログを作成 (IDが自動採番されることを期待)
-  def create(
+  // 感情ログを新規作成または更新
+  def upsert(
       userId: String,
+      logDate: LocalDate,
       emotionLevel: EmotionLevel,
-      memo: Option[String],
-      recordedAt: Instant
+      memo: Option[String]
   ): Option[Long] = {
     db.withConnection { implicit connection =>
-      SQL"""
-        INSERT INTO emotion_log (user_id, emotion_level, memo, recorded_at)
-        VALUES (${userId}, ${emotionLevel.value}, ${memo}, ${recordedAt})
-      """.executeInsert() // executeInsertはOption[Long] (生成されたID) を返す
+      val existingId: Option[Long] =
+        SQL"SELECT id FROM emotion_log WHERE user_id = ${userId} AND log_date = ${logDate}"
+          .as(scalar[Long].singleOpt)
+
+      existingId match {
+        // 存在する場合: UPDATE
+        case Some(id) =>
+          SQL"""
+            UPDATE emotion_log
+            SET emotion_level = ${emotionLevel.value}, memo = ${memo}, recorded_at = ${Instant
+              .now()}, updated_at = CURRENT_TIMESTAMP
+            WHERE id = ${id}
+          """.executeUpdate()
+          Some(id) // 更新したログのIDを返す
+
+        // 存在しない場合: INSERT
+        case None =>
+          SQL"""
+            INSERT INTO emotion_log (user_id, log_date, emotion_level, memo, recorded_at)
+            VALUES (${userId}, ${logDate}, ${emotionLevel.value}, ${memo}, ${Instant
+              .now()})
+          """.executeInsert() // 新規作成されたIDを返す
+      }
     }
   }
 

@@ -1,46 +1,40 @@
-### 変数定義 (ファイル内で再利用できる)
-@hostname = localhost:9000
-@api_prefix = /api/logs
-@user_id = user123
-@content_type = application/json
-
-###
-### 1. 新しい感情ログを作成 (POST)
-POST http://{{hostname}}{{api_prefix}}
-Content-Type: {{content_type}}
+### 1. 新規作成 (2025-06-08)
+POST http://localhost:9000/api/logs
+Content-Type: application/json
 
 {
-  "userId": "{{user_id}}",
-  "emotionLevel": "very_good",
-  "memo": "VS Codeの拡張機能でテスト中！",
-  "recordedAt": "2025-06-07T11:50:00Z"
-}
-
-###
-### 2. IDで特定の感情ログを取得 (GET)
-# 上記のPOSTリクエストで作成されたログのIDを1と仮定
-GET http://{{hostname}}{{api_prefix}}/1
-
-###
-### 3. 特定ユーザーの全ログを取得 (GET)
-GET http://{{hostname}}{{api_prefix}}/user/{{user_id}}
-
-###
-### 4. 全てのログを取得 (デバッグ用)
-GET http://{{hostname}}{{api_prefix}}
-
-###
-### 5. ログを更新 (PUT)
-PUT http://{{hostname}}{{api_prefix}}/1
-Content-Type: {{content_type}}
-
-{
-  "userId": "{{user_id}}",
+  "userId": "user123",
+  "logDate": "2025-06-08",
   "emotionLevel": "good",
-  "memo": "更新テストOK",
-  "recordedAt": "2025-06-07T11:55:00Z"
+  "memo": "初めての日付指定記録"
 }
 
-###
-### 6. ログを削除 (DELETE)
-DELETE http://{{hostname}}{{api_prefix}}/1
+// 期待されるレスポンス: {"status":"OK", "message":"Emotion log saved", "id":1} のような形式
+
+
+### 2. 更新 (同じ日: 2025-06-08)
+POST http://localhost:9000/api/logs
+Content-Type: application/json
+
+{
+  "userId": "user123",
+  "logDate": "2025-06-08",
+  "emotionLevel": "very_bad",
+  "memo": "やっぱり最悪な日だった（更新）"
+}
+
+// 期待されるレスポンス: {"status":"OK", "message":"Emotion log saved", "id":1} のような形式 (IDは同じはず)
+
+
+### 3. 新規作成 (別の日: 2025-06-09)
+POST http://localhost:9000/api/logs
+Content-Type: application/json
+
+{
+  "userId": "user123",
+  "logDate": "2025-06-09",
+  "emotionLevel": "neutral",
+  "memo": "別の日"
+}
+
+// 期待されるレスポンス: {"status":"OK", "message":"Emotion log saved", "id":2} のような形式 (新しいID)

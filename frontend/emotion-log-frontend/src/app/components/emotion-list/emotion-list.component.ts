@@ -1,6 +1,6 @@
 import { Component, OnInit, inject } from '@angular/core';
 import { CommonModule, DatePipe } from '@angular/common'; // DatePipeをインポート
-import { ApiService, EmotionLog } from '../../services/api.service';
+import { EmotionLogService, EmotionLog } from '../../services/emotion-log.service';
 
 @Component({
   selector: 'app-emotion-list',
@@ -11,7 +11,7 @@ import { ApiService, EmotionLog } from '../../services/api.service';
   styleUrls: ['./emotion-list.component.scss']
 })
 export class EmotionListComponent implements OnInit {
-  private apiService = inject(ApiService);
+  private apiService = inject(EmotionLogService);
   private datePipe = inject(DatePipe); // DatePipeをインジェクト
 
   // コンポーネントの状態を管理
@@ -54,9 +54,9 @@ export class EmotionListComponent implements OnInit {
     return this.emotionDisplayMap[level] || { label: '不明', color: 'bg-gray-400', emoji: '🤷' };
   }
 
-  // 日付をフォーマットするヘルパーメソッド
+    // 日付をフォーマットするヘルパーメソッド
   formatDate(dateString: string): string {
-    // 'yyyy/MM/dd HH:mm' の形式でフォーマット
-    return this.datePipe.transform(dateString, 'yyyy/MM/dd HH:mm') || '';
+    // 'yyyy/MM/dd (E)' の形式でフォーマット (例: 2025/06/08 (日))
+    return this.datePipe.transform(dateString, 'yyyy/MM/dd (E)') || '';
   }
 }

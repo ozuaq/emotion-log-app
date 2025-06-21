@@ -8,9 +8,9 @@ echo "Installing sbt..."
 SBT_VERSION="1.9.9"
 SBT_TGZ_URL="https://github.com/sbt/sbt/releases/download/v${SBT_VERSION}/sbt-${SBT_VERSION}.tgz"
 SBT_TEMP_FILE="/tmp/sbt-${SBT_VERSION}.tgz"
-# sbtのtarballは展開すると 'sbt' という名前のディレクトリが作成されるため、展開先の親ディレクトリを指定
+# インストール先のディレクトリと実行ファイルのパスを定義
 SBT_INSTALL_PARENT_DIR="/usr/local"
-SBT_EXECUTABLE_PATH="${SBT_INSTALL_PARENT_DIR}/sbt/bin/sbt" # 展開後のsbt実行ファイルのパス
+SBT_EXECUTABLE_PATH="${SBT_INSTALL_PARENT_DIR}/sbt/bin/sbt"
 SBT_LINK_TARGET_DIR="/usr/local/bin"
 
 # sbtのダウンロード

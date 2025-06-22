@@ -137,11 +137,55 @@ Metals のビルド情報をリセットする。
 rm -rf target/ logs/ .metals/ project/project/ project/target/ project/metals.sbt project/.bloop/
 ```
 
-### 提示された play-pac4j のコードがうまく動かなかったため次のように対応
+### git ステージング済みと未ステージングを分けて退避する方法
 
-公式ドキュメントのソースコードをもとに必要な箇所だけ抜き出して実装するように指示。
+git stash push
 
-最初は全部入りの依存関係で実装後、必要なもの以外を省く。
+ステージング済み と 未ステージング の両方 HEAD コミットと同じクリーンな状態に戻る
 
-Security configuration の定義は次のコードを参考にするように指示。
-https://github.com/pac4j/play-pac4j/wiki/Dependencies
+git stash push --keep-index
+
+git stash push -k
+
+未ステージング の変更のみ ステージング済みの変更は残り、それ以外は HEAD コミットと同じ状態になる
+
+git stash push --staged
+
+git stash push -S
+
+ステージング済み の変更のみ 未ステージングの変更は残り、ステージングエリアが HEAD コミットと同じ状態になる
+
+git stash push --patch
+
+git stash push -p
+
+変更点（hunk）を対話的に選択して退避 選択した変更のみが退避される
+
+git stash --include-untracked
+
+git stash -u
+
+Untracked files も含めて、現在の変更をすべて退避
+
+git stash --all
+
+git stash -a
+
+無視しているファイルも含め、すべてを退避
+
+### frontendとbackendのコンテナを分けた
+
+scalaのvscode拡張機能Metalsが上手く機能しないので、プロジェクトルートにbuild.sbtが来るようにした
+
+frontendとbackendのdevcontainerの設定それぞれ作成した。sbtのインストールにはsdkmanを使ってインストールするようにした。
+
+### ユーザ認証のコードがうまく動かなかったため次のように対応
+
+認証のライブラリとして有名であり、勉強用途として自分で実装する量が適切だと判断して、play-pac4jを選択した。
+
+参考になる公式ドキュメントのサンプルコードをピックアップして示し、それを参考にして実装するように指示。
+
+build.sbtのサンプル https://github.com/pac4j/play-pac4j-scala-demo/blob/master/build.sbt
+
+
+app/modules/SecurityModule.scalaのサンプル https://github.com/pac4j/play-pac4j-scala-demo/blob/master/app/modules/SecurityModule.scala

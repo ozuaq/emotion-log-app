@@ -1,0 +1,53 @@
+// .devcontainer/devcontainer.json
+{
+  "name": "Emotion Log Backend",
+  "image": "mcr.microsoft.com/devcontainers/base:debian",
+  "features": {
+    "ghcr.io/devcontainers/features/java:1": {
+      "version": "17", // Play Framework (Scala) はJavaに依存します
+      "installMaven": false,
+      "installGradle": false
+    },
+    "ghcr.io/devcontainers/features/common-utils:2": {
+      "installZsh": "true",
+      "installOhMyZsh": "true",
+      "upgradePackages": "true",
+      "configureSshAgentForwarding": true // SSHエージェントフォワーディングを有効にする
+    }
+  },
+  "customizations": {
+    "vscode": {
+      "extensions": [
+        "scala-lang.scala", // Scalaサポート
+        "scalameta.metals", // Scala Language Server
+        "ms-azuretools.vscode-docker", // Dockerサポート
+        "alexcvzz.vscode-sqlite",
+        "humao.rest-client",
+        "streetsidesoftware.code-spell-checker",
+        "esbenp.prettier-vscode"
+      ],
+      "settings": {
+        "[json]": {
+          "editor.defaultFormatter": "esbenp.prettier-vscode",
+          "editor.formatOnSave": true
+        },
+        "[jsonc]": {
+          "editor.defaultFormatter": "esbenp.prettier-vscode"
+        },
+        "files.watcherExclude": {
+          "**/.git/objects/**": true,
+          "**/.git/subtree-cache/**": true,
+          "**/.bloop": true,
+          "**/.metals": true,
+          "**/target": true
+        }
+      }
+    }
+  },
+  "postCreateCommand": "bash .devcontainer/post-create.sh",
+  "forwardPorts": [
+    9000 // Play Framework のデフォルトポート
+  ],
+  "workspaceMount": "source=${localWorkspaceFolder},target=/workspaces/${localWorkspaceFolderBasename},type=bind,consistency=cached",
+  "workspaceFolder": "/workspaces/${localWorkspaceFolderBasename}"
+}

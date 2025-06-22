@@ -7,10 +7,8 @@ lazy val root = (project in file(".")).enablePlugins(PlayScala)
 
 scalaVersion := "2.13.16"
 
-// pac4jのバージョンを指定
-val pac4jVersion = "6.0.0"
-
-val jacksonVersion = "2.16.2"
+val playPac4jVersion = "12.0.2-PLAY3.0"
+val pac4jVersion = "6.1.3"
 
 libraryDependencies ++= Seq(
   guice,
@@ -21,12 +19,13 @@ libraryDependencies ++= Seq(
   "org.playframework.anorm" %% "anorm" % "2.7.0",
   // SQLite JDBCドライバ
   "org.xerial" % "sqlite-jdbc" % "3.45.3.0",
-  // JSONシリアライズ/デシリアライズ用のJackson
-  "com.fasterxml.jackson.module" %% "jackson-module-scala" % jacksonVersion,
-  // Play 3.0用のplay-pac4j
-  "org.pac4j" %% "play-pac4j" % "12.0.0-PLAY3.0",
-  // フォーム認証(ユーザー名/パスワード)など基本的なHTTP認証プロトコル用
-  "org.pac4j" % "pac4j-http" % pac4jVersion
+  // play-pac4j
+  "org.pac4j" %% "play-pac4j" % playPac4jVersion,
+  "org.pac4j" % "pac4j-http" % pac4jVersion excludeAll (ExclusionRule(
+    organization = "com.fasterxml.jackson.core"
+  )),
+  "org.pac4j" % "pac4j-jwt" % pac4jVersion exclude ("commons-io", "commons-io"),
+  "com.fasterxml.jackson.module" %% "jackson-module-scala" % "2.19.1"
 )
 
 // Adds additional packages into Twirl

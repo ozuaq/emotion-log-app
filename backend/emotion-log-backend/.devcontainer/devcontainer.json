@@ -45,6 +45,11 @@
     }
   },
   "postCreateCommand": "bash .devcontainer/post-create.sh",
+  "runArgs": [
+    // プロジェクトルートの.envファイルを環境変数として読み込む
+    "--env-file",
+    "${localWorkspaceFolder}/.env"
+  ],
   "forwardPorts": [
     9000 // Play Framework のデフォルトポート
   ],

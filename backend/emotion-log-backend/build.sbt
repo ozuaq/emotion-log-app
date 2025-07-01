@@ -7,25 +7,17 @@ lazy val root = (project in file(".")).enablePlugins(PlayScala)
 
 scalaVersion := "2.13.16"
 
-val playPac4jVersion = "12.0.2-PLAY3.0"
-val pac4jVersion = "6.1.3"
-
 libraryDependencies ++= Seq(
   guice,
-  "org.scalatestplus.play" %% "scalatestplus-play" % "7.0.1" % Test,
   jdbc,
   evolutions,
+  "org.scalatestplus.play" %% "scalatestplus-play" % "7.0.1" % Test,
   // Anorm - PlayのシンプルなSQLデータアクセスライブラリ
   "org.playframework.anorm" %% "anorm" % "2.7.0",
   // SQLite JDBCドライバ
   "org.xerial" % "sqlite-jdbc" % "3.45.3.0",
-  // play-pac4j
-  "org.pac4j" %% "play-pac4j" % playPac4jVersion,
-  "org.pac4j" % "pac4j-http" % pac4jVersion excludeAll (ExclusionRule(
-    organization = "com.fasterxml.jackson.core"
-  )),
-  "org.pac4j" % "pac4j-jwt" % pac4jVersion exclude ("commons-io", "commons-io"),
-  "com.fasterxml.jackson.module" %% "jackson-module-scala" % "2.19.1"
+  "com.github.jwt-scala" %% "jwt-play" % "10.0.0",
+  "org.springframework.security" % "spring-security-crypto" % "6.3.1"
 )
 
 // Adds additional packages into Twirl

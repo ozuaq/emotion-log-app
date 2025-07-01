@@ -38,7 +38,7 @@ object EmotionLevel {
 // 感情ログのデータを表すケースクラス
 case class EmotionLog(
     id: Option[Long], // データベースで自動採番されるID (新規作成時はNone)
-    userId: String, // ユーザーID (将来的には認証と連携)
+    userId: Long, // ユーザーID (将来的には認証と連携)
     logDate: LocalDate, // 記録対象の日付
     emotionLevel: EmotionLevel, // 感情の段階 (非常に良い、良い、普通、悪い、非常に悪い)
     memo: Option[String], // 簡単なメモ (任意)

@@ -57,3 +57,30 @@ POST http://localhost:9000/api/logs/seed?year=2025&month=6
 ###
 ### パラメータが不足している場合（エラー例）
 POST http://localhost:9000/api/logs/seed?year=2025
+
+
+### 1. ユーザーを新規登録する
+POST http://localhost:9000/api/signup
+Content-Type: application/json
+
+{
+  "email": "jwt-user@example.com",
+  "password": "password123"
+}
+
+### 2. 登録したユーザーでログインし、JWTを取得する
+POST http://localhost:9000/api/login
+Content-Type: application/json
+
+{
+  "email": "jwt-user@example.com",
+  "password": "password123"
+}
+
+###
+# 上記のレスポンスから "token" の値をコピーして、下の @jwtToken に貼り付ける
+@jwtToken = eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiIyIiwiaXNzIj...
+
+### 3. 保護されたAPIにJWTを付けてアクセスする
+GET http://localhost:9000/api/profile
+Authorization: Bearer {{jwtToken}}

@@ -6,17 +6,19 @@
 
 # ~~~~
 
-# --- Emotion Log API Endpoints ---
+# --- Authentication Endpoints ---
+POST    /api/signup               controllers.AuthController.signUp()
+POST    /api/login                controllers.AuthController.login()
+GET     /api/profile              controllers.AuthController.getProfile()
 
-POST /api/logs controllers.EmotionLogController.upsert()
-GET /api/logs/user/:userId controllers.EmotionLogController.listByUser(userId: String)
-GET /api/logs/:id controllers.EmotionLogController.findById(id: Long)
-DELETE /api/logs/:id controllers.EmotionLogController.delete(id: Long)
+# --- Emotion Log API Endpoints ---
+POST    /api/logs                 controllers.EmotionLogController.upsert()
+GET     /api/logs/user/:userId    controllers.EmotionLogController.listByUser(userId: Long)
+GET     /api/logs/:id             controllers.EmotionLogController.findById(id: Long)
+DELETE  /api/logs/:id             controllers.EmotionLogController.delete(id: Long)
 
 # 以下、デバッグ用
-
-GET /api/logs controllers.EmotionLogController.listAll()
+GET     /api/logs                 controllers.EmotionLogController.listAll()
 
 # --- サンプルデータ生成用エンドポイント ---
-
-POST /api/logs/seed controllers.EmotionLogController.seed()
+POST    /api/logs/seed            controllers.EmotionLogController.seed()

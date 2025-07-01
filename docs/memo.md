@@ -179,13 +179,8 @@ scalaのvscode拡張機能Metalsが上手く機能しないので、プロジェ
 
 frontendとbackendのdevcontainerの設定それぞれ作成した。sbtのインストールにはsdkmanを使ってインストールするようにした。
 
-### ユーザ認証のコードがうまく動かなかったため次のように対応
+### org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder
+インポート文が間違っていたので上記に修正した
 
-認証のライブラリとして有名であり、勉強用途として自分で実装する量が適切だと判断して、play-pac4jを選択した。
-
-参考になる公式ドキュメントのサンプルコードをピックアップして示し、それを参考にして実装するように指示。
-
-build.sbtのサンプル https://github.com/pac4j/play-pac4j-scala-demo/blob/master/build.sbt
-
-
-app/modules/SecurityModule.scalaのサンプル https://github.com/pac4j/play-pac4j-scala-demo/blob/master/app/modules/SecurityModule.scala
+### JWT_SECRETを環境変数から設定できるようにした
+jwtの秘密鍵をgitの追跡に含めるのは良くないので、.gitignoreで非追跡ファイルに設定した.envに設定し、コンテナビルド時にdevcontainer.jsonで環境変数として設定するようにした。

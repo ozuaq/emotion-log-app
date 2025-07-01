@@ -25,3 +25,6 @@ target
 *.db
 *.sqlite
 *.sqlite3
+
+# 環境変数
+/.env

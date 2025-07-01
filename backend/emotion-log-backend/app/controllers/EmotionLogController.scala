@@ -15,7 +15,7 @@ object EmotionLogController {
 
   // APIリクエストのボディ(ペイロード)を表すケースクラス
   case class EmotionLogPayload(
-      userId: String,
+      userId: Long,
       logDate: LocalDate,
       emotionLevel: EmotionLevel,
       memo: Option[String]
@@ -74,7 +74,7 @@ class EmotionLogController @Inject() (
   }
 
   // 特定ユーザーの感情ログ一覧を取得 (GET /api/logs/user/:userId)
-  def listByUser(userId: String): Action[AnyContent] = Action {
+  def listByUser(userId: Long): Action[AnyContent] = Action {
     implicit request: Request[AnyContent] =>
       val logs = emotionLogRepo.findAllByUserId(userId)
       Ok(Json.toJson(logs))

@@ -1,0 +1,53 @@
+###
+### ユーザー認証APIのテスト
+###
+
+# 変数定義
+@hostname = http://localhost:9000
+@api_prefix = /api
+@test_email = user-hoge@example.com
+@test_password = password123
+
+###
+### 1. 新規ユーザー登録 (Sign Up)
+# このリクエストを送信して、まずユーザーを作成します。
+POST {{hostname}}{{api_prefix}}/signup
+Content-Type: application/json
+
+{
+  "email": "{{test_email}}",
+  "password": "{{test_password}}",
+  "name": "テストユーザー"
+}
+
+###
+### 2. ログインしてJWTを取得 (Login)
+# 上記で登録したユーザーの認証情報でログインを試みます。
+# 成功すると、レスポンスボディにJWTが返されます。
+POST {{hostname}}{{api_prefix}}/login
+Content-Type: application/json
+
+{
+  "email": "{{test_email}}",
+  "password": "{{test_password}}"
+}
+
+
+###
+# ----------------------------------------------------
+# ★ 使い方 ★
+# 1. 上の「2. ログインしてJWTを取得」リクエストを送信します。
+# 2. 返ってきたレスポンスの中から、"token"の値をコピーします。
+#    (例: "eyJhbGciOiJIUzI1NiJ9.eyJzdWIi...")
+# 3. 下の @jwtToken = の右側に、コピーしたトークンを貼り付けます。
+# ----------------------------------------------------
+@jwtToken = eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJzdWIiOiIzIiwiZXhwIjoxNzUxNDcxMDQwLCJpYXQiOjE3NTEzODQ2NDB9.w-8p3fSeT9QUjxJcIlJ6v1QlfEgWYs_1TdJj2fgzmq0
+
+
+###
+### 3. 保護されたAPIへのアクセス (JWT検証テスト)
+# AuthorizationヘッダーにJWTを付けてリクエストを送信します。
+# 成功すれば、"Authentication successful..."というメッセージが返ってきます。
+GET {{hostname}}{{api_prefix}}/profile
+Authorization: Bearer {{jwtToken}}
+

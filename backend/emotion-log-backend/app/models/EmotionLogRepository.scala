@@ -20,7 +20,7 @@ class EmotionLogRepository @Inject() (db: Database)(implicit
   // DBの行からEmotionLogオブジェクトにマッピングするためのパーサー
   private val emotionLogParser: RowParser[EmotionLog] = {
     get[Option[Long]]("id") ~
-      get[String]("user_id") ~
+      get[Long]("user_id") ~
       get[LocalDate]("log_date") ~ // ★変更
       get[String]("emotion_level") ~
       get[Option[String]]("memo") ~
@@ -41,7 +41,7 @@ class EmotionLogRepository @Inject() (db: Database)(implicit
 
   // 感情ログを新規作成または更新
   def upsert(
-      userId: String,
+      userId: Long,
       logDate: LocalDate,
       emotionLevel: EmotionLevel,
       memo: Option[String]
@@ -83,7 +83,7 @@ class EmotionLogRepository @Inject() (db: Database)(implicit
   }
 
   // 特定のユーザーの全ての感情ログを取得 (recorded_atで降順ソート)
-  def findAllByUserId(userId: String): List[EmotionLog] = {
+  def findAllByUserId(userId: Long): List[EmotionLog] = {
     db.withConnection { implicit connection =>
       SQL"SELECT * FROM emotion_log WHERE user_id = ${userId} ORDER BY recorded_at DESC"
         .as(emotionLogParser.*) // .as(parser.*) でList[T]を取得
@@ -130,7 +130,7 @@ class EmotionLogRepository @Inject() (db: Database)(implicit
     *   処理された日数
     */
   def seed(year: Int, month: Int): Int = {
-    val userId = "user123"
+    val userId = 1L
     val random = new Random
 
     val firstDayOfMonth = LocalDate.of(year, month, 1)

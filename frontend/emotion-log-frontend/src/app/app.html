@@ -1,20 +1,29 @@
+@if (authService.isAuthenticated()) {
+<!-- ★ ログイン済みのユーザーに表示されるレイアウト ★ -->
 <div class="bg-gray-100 min-h-screen">
   <header class="bg-white shadow">
     <nav class="container mx-auto p-4 flex justify-between items-center">
-      <a routerLink="/" class="text-xl font-bold text-blue-600">EmotionLog</a>
-      <div>
-        <a routerLink="/new" class="text-gray-600 hover:text-blue-600 mr-4" routerLinkActive="font-bold text-blue-600"
+      <a routerLink="/logs" class="text-xl font-bold text-blue-600">EmotionLog</a>
+      <div class="flex items-center space-x-4">
+        <span class="text-gray-700"
+          >ようこそ、{{ authService.currentUser()?.name || authService.currentUser()?.email }} さん</span
+        >
+        <a routerLink="/new" class="text-gray-600 hover:text-blue-600" routerLinkActive="font-bold text-blue-600"
           >記録する</a
         >
         <a routerLink="/logs" class="text-gray-600 hover:text-blue-600" routerLinkActive="font-bold text-blue-600"
           >一覧を見る</a
         >
+        <button (click)="authService.logout()" class="text-gray-600 hover:text-blue-600">ログアウト</button>
       </div>
     </nav>
   </header>
-
   <main>
-    <!-- ここにルーティングされたコンポーネントが表示される -->
     <router-outlet></router-outlet>
   </main>
 </div>
+} @else {
+<!-- ★ 未ログインのユーザーに表示されるのは、ルーターのアウトレットのみ ★ -->
+<!-- (これにより、ログイン画面やサインアップ画面が全画面で表示される) -->
+<router-outlet></router-outlet>
+}

@@ -1,21 +1,16 @@
-// frontend/emotion-log-frontend/src/app/app.ts
-import { Component } from '@angular/core';
-import { RouterOutlet, RouterLink, RouterLinkActive } from '@angular/router';
+import { Component, inject } from '@angular/core';
+import { RouterOutlet, RouterLink } from '@angular/router';
+import { AuthService } from './services/auth.service';
+import { CommonModule } from '@angular/common';
 
 @Component({
   selector: 'app-root',
-  standalone: true, // スタンドアロンコンポーネント
-  imports: [
-    RouterOutlet,
-    RouterLink,
-    RouterLinkActive
-  ],
+  standalone: true,
+  imports: [CommonModule, RouterOutlet, RouterLink],
   templateUrl: './app.html',
-  styleUrl: './app.scss' // styleUrl は単数形が一般的
+  styleUrl: './app.scss'
 })
 export class App {
-  protected title = 'emotion-log-frontend'; // title は protected のままでも良い
-  error: any = null;
-
-  constructor() { }
+  // AuthServiceをインジェクトして、テンプレートから直接使えるようにする
+  authService = inject(AuthService);
 }

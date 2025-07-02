@@ -1,0 +1,72 @@
+<div class="flex items-center justify-center min-h-screen bg-gray-100">
+  <div class="w-full max-w-md p-8 space-y-6 bg-white rounded-lg shadow-md">
+    <h2 class="text-2xl font-bold text-center text-gray-900">サインアップ</h2>
+
+    <!-- 登録成功メッセージ -->
+    @if (submissionStatus === 'success') {
+      <div class="p-4 text-center bg-green-100 text-green-800 rounded-md">
+        <p class="font-semibold">登録が完了しました！</p>
+        <p class="text-sm">ログインページに移動します...</p>
+      </div>
+    }
+
+    <!-- 登録フォーム (成功時は非表示) -->
+    @if (submissionStatus !== 'success') {
+      <form [formGroup]="signupForm" (ngSubmit)="onSubmit()" class="space-y-6">
+        <div>
+          <label for="name" class="block text-sm font-medium text-gray-700">名前 (任意)</label>
+          <input
+            id="name"
+            type="text"
+            formControlName="name"
+            class="w-full px-3 py-2 mt-1 border border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500"
+          />
+        </div>
+        <div>
+          <label for="email" class="block text-sm font-medium text-gray-700">メールアドレス</label>
+          <input
+            id="email"
+            type="email"
+            formControlName="email"
+            required
+            class="w-full px-3 py-2 mt-1 border border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500"
+          />
+        </div>
+        <div>
+          <label for="password" class="block text-sm font-medium text-gray-700">パスワード (8文字以上)</label>
+          <input
+            id="password"
+            type="password"
+            formControlName="password"
+            required
+            class="w-full px-3 py-2 mt-1 border border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500"
+          />
+        </div>
+
+        <!-- エラーメッセージ -->
+        @if (errorMessage) {
+          <p class="text-sm text-red-600">{{ errorMessage }}</p>
+        }
+
+        <div>
+          <button
+            type="submit"
+            [disabled]="signupForm.invalid || submissionStatus === 'submitting'"
+            class="w-full px-4 py-2 font-medium text-white bg-blue-600 rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 disabled:bg-gray-400"
+          >
+            @if (submissionStatus === 'submitting') {
+              <span>登録中...</span>
+            } @else {
+              <span>登録する</span>
+            }
+          </button>
+        </div>
+      </form>
+    }
+
+    <p class="text-sm text-center text-gray-600">
+      既にアカウントをお持ちですか？
+      <a routerLink="/login" class="font-medium text-blue-600 hover:underline">ログイン</a>
+    </p>
+  </div>
+</div>

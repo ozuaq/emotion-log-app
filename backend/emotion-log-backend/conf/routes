@@ -13,12 +13,4 @@ GET     /api/profile              controllers.AuthController.getProfile()
 
 # --- Emotion Log API Endpoints ---
 POST    /api/logs                 controllers.EmotionLogController.upsert()
-GET     /api/logs/user/:userId    controllers.EmotionLogController.listByUser(userId: Long)
-GET     /api/logs/:id             controllers.EmotionLogController.findById(id: Long)
-DELETE  /api/logs/:id             controllers.EmotionLogController.delete(id: Long)
-
-# 以下、デバッグ用
-GET     /api/logs                 controllers.EmotionLogController.listAll()
-
-# --- サンプルデータ生成用エンドポイント ---
-POST    /api/logs/seed            controllers.EmotionLogController.seed()
+GET     /api/logs                 controllers.EmotionLogController.list()

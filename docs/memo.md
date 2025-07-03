@@ -28,17 +28,6 @@ scalaVersion := "2.13.16"
 バージョンは 2.13.16
 Scala 2.13 は Scala 3 との間で双方向のバイナリ互換性がある。
 
-### ユーザ認証の実装に play-pac4j を使うように AI に指示
-
-次を参考にするように指示した。(https://github.com/pac4j/play-pac4j/wiki/Dependencies)
-
-```
-You need to add the required dependencies:
-
-the play-pac4j_2.12 or play-pac4j_2.13 or play-pac4j_3 library: "org.pac4j" %% "play-pac4j" % "12.0.0-PLAYx.x" (where x.x is 2.8, 2.9 or 3.0)
-the appropriate pac4j submodules (groupId: org.pac4j, version: 6.0.0): pac4j-oauth for OAuth support (Facebook, Twitter...), pac4j-cas for CAS support, pac4j-ldap for LDAP authentication, etc.
-All released artifacts are available in the Maven central repository.
-```
 
 ### implicit の使い方
 
@@ -123,12 +112,6 @@ myBird.run()
 myBird.fly()
 ```
 
-### エラー解決: [error] com.fasterxml.jackson.databind.JsonMappingException: Scala module 2.14.3 requires Jackson Databind version >= 2.14.0 and < 2.15.0 - Found jackson-databind version 2.16.0 <br> [error] at com.fasterxml.jackson.module.scala.JacksonModule.setupModule(JacksonModule.scala:61)
-
-これはすでに他のライブラリで 2.16.0 の jackson.databind が使われているが、jackson.module.scala では 2.14.0 以上 2.15.0 を要求しているためエラー。
-
-MVNRepository (Maven Central) のサイトで、jackson-module-scala_2.13 で調べて、Compile Dependencies で jackson.databind が 2.16.x になっている jackson-module-scala_2.13 のバージョンを選択する。
-
 ### エラー解決: VS Code の拡張機能（Metals）が上手くライブラリを認識しない問題
 
 Metals のビルド情報をリセットする。
@@ -196,6 +179,6 @@ jwtの秘密鍵をgitの追跡に含めるのは良くないので、.gitignore�
 
 トークン検証時には、ヘッダー、ペイロードの文字列をサーバにあるjwtの秘密鍵でハッシュ化して、そのハッシュ値が署名と完全一致しているかを確認し、改竄されていないかを検証する。有効期限が切れていないかは、ペイロードをデコードし、有効期限を読み取れるようにし、現在時刻が有効期限内かを確認する。
 
-### signalとは？使い方 public isAuthenticated = signal<boolean>(this.hasToken());
-
-### validationが通らなかったらフォームにメッセージ表示してみる？
+### Angularの変更検知
+コンポーネントクラスのpublicメンバ変数の参照が変わった場合に変更を検知する。
+signalを使う場合、値を使っている箇所だけが更新される。this.prop.set(newValue)のように更新する。
